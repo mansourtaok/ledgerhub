@@ -1,14 +1,21 @@
 package com.ledgerhub.model.db;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = User.TABLE_NAME)
+@Getter
+@Setter
 public class User {
 
 	public static final String TABLE_NAME = "users";
@@ -24,28 +31,26 @@ public class User {
 	@Column(name = "password_hash")
 	private String password;
 
-	public String getEmail() {
-		return email;
-	}
+	@Column(length = 3)
+	private String abbreviation;
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+	@Column(name = "preferred_color", length = 7)
+	private String preferredColor;
 
-	public String getPassword() {
-		return password;
-	}
+	@Column(name = "preferred_lang")
+	private String preferredLang;
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+	@Column(name = "created_at")
+	private LocalDateTime createdAt;
 
-	public Long getId() {
-		return id;
-	}
+	private Boolean active = true;
 
-	public void setId(Long id) {
-		this.id = id;
+	@Column(name = "role_id")
+	private Long roleId;
+
+	@PrePersist
+	public void prePersist() {
+		this.createdAt = LocalDateTime.now();
 	}
 
 }
