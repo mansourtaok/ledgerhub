@@ -41,7 +41,7 @@ public class UserService implements IUserService {
 		return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(),
 				new ArrayList<>());
 	}
-	
+
 	@Override
 	public User findUserByEmail(String email) {
 		return userRepository.findUserByEmail(email);
@@ -65,6 +65,32 @@ public class UserService implements IUserService {
 	}
 
 	@Override
+	public UserResponseDTO update(Long id, UserRequestDTO dto) {
+
+		User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+		SystemLookup role = lookupRepository.findById(dto.getRoleId())
+				.orElseThrow(() -> new IllegalArgumentException("Invalid role ID"));
+
+		SystemLookup lang = dto.getPreferredLangId() != null
+				? lookupRepository.findById(dto.getPreferredLangId()).orElse(null)
+				: null;
+
+		user.setEmail(dto.getEmail());
+		user.setAbbreviation(dto.getAbbreviation());
+		user.setPreferredColor(dto.getPreferredColor());
+		user.setPreferredLang(lang);
+		user.setRole(role);
+
+		if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+			user.setPassword(passwordEncoder.encode(dto.getPassword()));
+		}
+
+		return toDto(userRepository.save(user));
+
+	}
+
+	@Override
 	public UserResponseDTO getById(Long id) {
 		return userRepository.findById(id).map(this::toDto)
 				.orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -75,10 +101,27 @@ public class UserService implements IUserService {
 		return StreamSupport.stream(userRepository.findAll().spliterator(), false).map(this::toDto).toList();
 	}
 
+	@Override
+	public void delete(Long id) {
+		User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+		user.setActive(false);
+		userRepository.save(user);
+	}
+
+	@Override
+	public void hardDelete(Long id) {
+		if (!userRepository.existsById(id)) {
+			throw new IllegalArgumentException("User not found");
+		}
+		userRepository.deleteById(id);
+	}
+
 	private UserResponseDTO toDto(User user) {
 		return UserResponseDTO.builder().id(user.getId()).email(user.getEmail()).abbreviation(user.getAbbreviation())
 				.preferredColor(user.getPreferredColor()).role(user.getRole().getCode())
 				.preferredLang(user.getPreferredLang() != null ? user.getPreferredLang().getCode() : null)
 				.active(user.getActive()).createdAt(user.getCreatedAt()).build();
 	}
+
 }

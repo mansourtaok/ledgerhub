@@ -15,9 +15,15 @@ public interface IUserService {
 
 	UserResponseDTO create(UserRequestDTO dto);
 
+	UserResponseDTO update(Long id, UserRequestDTO dto);
+
 	UserResponseDTO getById(Long id);
 
 	List<UserResponseDTO> getAll();
+
+	void delete(Long id);
+
+	void hardDelete(Long id);
 
 	UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
 }
