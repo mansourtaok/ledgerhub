@@ -108,7 +108,7 @@ CREATE TABLE staffs (
     contact_number      VARCHAR(50),
     email               VARCHAR(150),
 
-    job_description     INT NOT NULL,
+    job_description_id     INT NOT NULL,
     join_date           DATE,
     leave_date          DATE,
 
@@ -130,6 +130,12 @@ CREATE TABLE staffs (
         REFERENCES system_lookup(id)
         ON UPDATE CASCADE
         ON DELETE RESTRICT,
+        
+    CONSTRAINT fk_staffs_job_description
+        FOREIGN KEY (job_description_id)
+        REFERENCES system_lookup(id)
+        ON UPDATE CASCADE
+        ON DELETE SET NULL,      
 		
     CONSTRAINT fk_staffs_company_id
         FOREIGN KEY (company_id)

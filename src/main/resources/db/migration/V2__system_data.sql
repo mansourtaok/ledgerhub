@@ -60,7 +60,18 @@ INSERT INTO system_lookup (category, code, name, description, is_active) VALUES
 -- ADMIN ROLE
 ('ROLE','ADM','ADMIN','ADMIN',true),
 ('ROLE','MGR','MANAGER','Manager',true),
-('ROLE','USR','USER','User',true);
+('ROLE','USR','USER','User',true),
+
+-- JOB DESCRIPTION
+('JOB_DESC','MGR','Manager','Manager',true),
+('JOB_DESC','SR','Sales Representative','Sales Representative',true),
+('JOB_DESC','STM','Store Manager','Store Manager',true),
+('JOB_DESC','SK','Store Keeper','Store Keeper',true),
+('JOB_DESC','AM','Accounting Manager','Accounting Manager',true),
+('JOB_DESC','ACC','Accountant','Accountant',true),
+('JOB_DESC','DRV','Driver','Driver',true),
+('JOB_DESC','AST','Assistant','Assistant',true);
+
 
 INSERT INTO countries (
     iso2,
