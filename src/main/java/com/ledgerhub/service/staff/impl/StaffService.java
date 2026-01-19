@@ -1,4 +1,4 @@
-package com.ledgerhub.service.impl;
+package com.ledgerhub.service.staff.impl;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,7 +11,7 @@ import com.ledgerhub.repository.CompanyRepository;
 import com.ledgerhub.repository.StaffRepository;
 import com.ledgerhub.repository.SystemLookupRepository;
 import com.ledgerhub.repository.UserRepository;
-import com.ledgerhub.service.IStaffService;
+import com.ledgerhub.service.staff.IStaffService;
 import com.ledgerhub.utils.StaffSpecification;
 
 import lombok.RequiredArgsConstructor;

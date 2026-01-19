@@ -14,33 +14,34 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ledgerhub.model.dto.staff.StaffDTO;
-import com.ledgerhub.service.impl.StaffService;
+import com.ledgerhub.service.staff.IStaffExcelService;
+import com.ledgerhub.service.staff.IStaffService;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/staffs")
 @RequiredArgsConstructor
 public class StaffController {
 
-	private final StaffService staffService;
+	private final IStaffService staffService;
+	private final IStaffExcelService staffExcelServicee;
 
-	@PostMapping
+	@PostMapping("/api/staffs")
 	public ResponseEntity<StaffDTO> create(@RequestBody StaffDTO dto, @RequestParam("userId") Long userId) {
 		return ResponseEntity.ok(staffService.create(dto, userId));
 	}
 
-	@GetMapping("/{id}")
+	@GetMapping("/api/staffs/{id}")
 	public ResponseEntity<StaffDTO> getById(@PathVariable("id") Long id) {
 		return ResponseEntity.ok(staffService.getById(id));
 	}
 
-	@GetMapping
+	@GetMapping("/api/staffs")
 	public ResponseEntity<Page<StaffDTO>> getAll(@RequestParam(required = false, name = "fullName") String fullName,
 			@RequestParam(required = false, name = "jobDescriptionId") Long jobDescriptionId,
 			@RequestParam(defaultValue = "0", name = "page") int page,
@@ -69,15 +70,22 @@ public class StaffController {
 		return ResponseEntity.ok(staffService.getAll(fullName, jobDescriptionId, pageable));
 	}
 
-	@PutMapping("/{id}")
+	@PutMapping("/api/staffs/{id}")
 	public ResponseEntity<StaffDTO> update(@PathVariable("id") Long id, @RequestBody StaffDTO dto,
 			@RequestParam Long userId) {
 		return ResponseEntity.ok(staffService.update(id, dto, userId));
 	}
 
-	@DeleteMapping("/{id}")
+	@DeleteMapping("/api/staffs/{id}")
 	public ResponseEntity<Void> deactivate(@PathVariable Long id) {
 		staffService.deactivate(id);
 		return ResponseEntity.noContent().build();
+	}
+
+	@PostMapping("/api/companies/{companyId}/staffs")
+	public ResponseEntity<?> importStaffs(@PathVariable("companyId") Long companyId,
+			@RequestParam("userId") Long userId, @RequestParam("file") MultipartFile file) {
+		staffExcelServicee.importFromExcel(companyId, userId, userId, file);
+		return ResponseEntity.ok("Staff imported successfully");
 	}
 }

@@ -1,4 +1,4 @@
-package com.ledgerhub.service;
+package com.ledgerhub.service.staff;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
