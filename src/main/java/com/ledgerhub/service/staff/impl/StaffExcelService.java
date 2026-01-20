@@ -1,6 +1,9 @@
 package com.ledgerhub.service.staff.impl;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -33,6 +36,7 @@ public class StaffExcelService implements IStaffExcelService {
 	private final SystemLookupRepository systemLookupRepository;
 	private final UserRepository userRepository;
 
+	@Override
 	public void importFromExcel(Long companyId, Long createdUserId, Long lastUpdateUserId, MultipartFile file) {
 
 		Company company = companyRepository.findById(companyId)
@@ -74,6 +78,63 @@ public class StaffExcelService implements IStaffExcelService {
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to import staff", e);
 		}
+	}
+
+	@Override
+	public byte[] exportStaffsByCompany(Long companyId) {
+
+		List<Staff> staffs = staffRepository.findByCompanyId(companyId);
+
+		try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+			Sheet sheet = workbook.createSheet("Staffs");
+
+			// Header
+			Row header = sheet.createRow(0);
+			String[] columns = { "Full Name", "Address", "Contact Number", "Email", "Join Date", "Leave Date", "Gender",
+					"Job Description", "Have CNSS", "CNSS Number", "Notes", "Active" };
+
+			for (int i = 0; i < columns.length; i++) {
+				header.createCell(i).setCellValue(columns[i]);
+			}
+
+			int rowIdx = 1;
+			for (Staff staff : staffs) {
+				Row row = sheet.createRow(rowIdx++);
+
+				row.createCell(0).setCellValue(staff.getFullName());
+				row.createCell(1).setCellValue(staff.getAddress());
+				row.createCell(2).setCellValue(staff.getContactNumber());
+				row.createCell(3).setCellValue(staff.getEmail());
+				row.createCell(4).setCellValue(toString(staff.getJoinDate()));
+				row.createCell(5).setCellValue(toString(staff.getLeaveDate()));
+				row.createCell(6).setCellValue(getCode(staff.getGender()));
+				row.createCell(7).setCellValue(getCode(staff.getJobDescription()));
+				row.createCell(8).setCellValue(Boolean.TRUE.equals(staff.getHaveCnss()));
+				row.createCell(9).setCellValue(staff.getCnssNumber());
+				row.createCell(10).setCellValue(staff.getNotes());
+				row.createCell(11).setCellValue(Boolean.TRUE.equals(staff.getActive()));
+			}
+
+			// Auto-size columns
+			for (int i = 0; i < columns.length; i++) {
+				sheet.autoSizeColumn(i);
+			}
+
+			workbook.write(out);
+			return out.toByteArray();
+
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to export staffs", e);
+		}
+	}
+
+	private String toString(LocalDate date) {
+		return date == null ? "" : date.toString();
+	}
+
+	private String getCode(SystemLookup lookup) {
+		return lookup == null ? "" : lookup.getCode();
 	}
 
 	/* ================= Helpers ================= */
