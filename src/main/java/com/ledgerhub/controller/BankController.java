@@ -13,40 +13,40 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ledgerhub.model.dto.BankDTO;
-import com.ledgerhub.service.bank.impl.BankService;
+import com.ledgerhub.service.bank.IBankService;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/banks")
+@RequestMapping("/api/companies/{companyId}/banks")
 @RequiredArgsConstructor
 public class BankController {
 
-	private final BankService bankService;
+	private final IBankService bankService;
 
 	@PostMapping
-	public ResponseEntity<BankDTO> create(@RequestBody BankDTO dto) {
-		return ResponseEntity.ok(bankService.create(dto));
+	public ResponseEntity<BankDTO> create(@PathVariable Long companyId, @RequestBody BankDTO dto) {
+
+		return ResponseEntity.ok(bankService.create(companyId, dto));
 	}
 
-	@PutMapping("/{id}")
-	public ResponseEntity<BankDTO> update(@PathVariable("id") Long id, @RequestBody BankDTO dto) {
-		return ResponseEntity.ok(bankService.update(id, dto));
-	}
+	@GetMapping
+	public ResponseEntity<List<BankDTO>> list(@PathVariable Long companyId) {
 
-	@GetMapping("/{id}")
-	public ResponseEntity<BankDTO> getById(@PathVariable("id") Long id) {
-		return ResponseEntity.ok(bankService.getById(id));
-	}
-
-	@GetMapping("/company/{companyId}")
-	public ResponseEntity<List<BankDTO>> getByCompany(@PathVariable("companyId") Long companyId) {
 		return ResponseEntity.ok(bankService.getByCompany(companyId));
 	}
 
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		bankService.delete(id);
+	@PutMapping("/{bankId}")
+	public ResponseEntity<BankDTO> update(@PathVariable Long companyId, @PathVariable Long bankId,
+			@RequestBody BankDTO dto) {
+
+		return ResponseEntity.ok(bankService.update(companyId, bankId, dto));
+	}
+
+	@DeleteMapping("/{bankId}")
+	public ResponseEntity<Void> delete(@PathVariable Long companyId, @PathVariable Long bankId) {
+
+		bankService.delete(companyId, bankId);
 		return ResponseEntity.noContent().build();
 	}
 }

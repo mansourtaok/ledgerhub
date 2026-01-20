@@ -6,13 +6,13 @@ import com.ledgerhub.model.dto.BankDTO;
 
 public interface IBankService {
 
-	BankDTO create(BankDTO dto);
+	BankDTO create(Long companyId, BankDTO dto);
 
-	BankDTO update(Long id, BankDTO dto);
+	BankDTO update(Long companyId, Long bankId, BankDTO dto);
 
-	BankDTO getById(Long id);
+	BankDTO getById(Long companyId, Long bankId);
 
 	List<BankDTO> getByCompany(Long companyId);
 
-	void delete(Long id);
+	void delete(Long companyId, Long bankId);
 }
