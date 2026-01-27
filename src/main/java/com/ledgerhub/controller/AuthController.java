@@ -10,8 +10,12 @@ import com.ledgerhub.model.dto.JwtRequest;
 import com.ledgerhub.model.dto.JwtResponse;
 import com.ledgerhub.service.IAuthService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/auth")
+@Tag(name = "Authentication Controller")
 public class AuthController {
 
 	private final IAuthService authService;
@@ -20,6 +24,7 @@ public class AuthController {
 		this.authService = authService;
 	}
 
+	@Operation(summary = "Login")
 	@PostMapping("/login")
 	public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest request) {
 		return ResponseEntity.ok(authService.authenticate(request));

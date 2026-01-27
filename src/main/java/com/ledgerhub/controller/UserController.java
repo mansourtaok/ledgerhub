@@ -17,10 +17,12 @@ import com.ledgerhub.model.dto.user.UserRequestDTO;
 import com.ledgerhub.model.dto.user.UserResponseDTO;
 import com.ledgerhub.service.IUserService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/users")
+@Tag(name = "User Controller")
 @RequiredArgsConstructor
 public class UserController {
 

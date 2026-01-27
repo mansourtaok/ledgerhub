@@ -24,10 +24,12 @@ import com.ledgerhub.model.dto.staff.StaffDTO;
 import com.ledgerhub.service.staff.IStaffExcelService;
 import com.ledgerhub.service.staff.IStaffService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Staff Controller")
 public class StaffController {
 
 	private final IStaffService staffService;

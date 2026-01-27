@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
+@Tag(name = "Greeting Controller")
 public class GreetingController {
 
 	@Autowired

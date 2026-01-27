@@ -15,10 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ledgerhub.model.dto.BankDTO;
 import com.ledgerhub.service.bank.IBankService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/companies/{companyId}/banks")
+@Tag(name = "Company Banks Controller")
 @RequiredArgsConstructor
 public class BankController {
 

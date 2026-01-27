@@ -15,11 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ledgerhub.model.dto.company.CompanyDTO;
 import com.ledgerhub.service.impl.CompanyService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/companies")
 @RequiredArgsConstructor
+@Tag(name = "Company Controller")
 public class CompanyController {
 
 	private final CompanyService companyService;
