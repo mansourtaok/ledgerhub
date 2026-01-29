@@ -1,5 +1,7 @@
 package com.ledgerhub.model.dto.user;
 
+import java.util.Set;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,5 +20,5 @@ public class UserRequestDTO {
 	private String abbreviation;
 	private Long preferredLangId;
 	private String preferredColor;
-	private Long roleId;
+	private Set<Long> roleId;
 }

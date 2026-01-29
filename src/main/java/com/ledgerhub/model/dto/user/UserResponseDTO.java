@@ -1,6 +1,7 @@
 package com.ledgerhub.model.dto.user;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,7 +21,7 @@ public class UserResponseDTO {
 	private String abbreviation;
 	private String preferredColor;
 
-	private String role;
+	private List<RoleDTO> roles;
 	private String preferredLang;
 
 	private Boolean active;

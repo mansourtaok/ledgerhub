@@ -11,5 +11,7 @@ public interface SystemLookupRepository extends JpaRepository<SystemLookup, Long
 
 	Optional<SystemLookup> findByCategoryAndCode(String category, String code);
 
+	List<SystemLookup> findByCategory(String category);
+
 	List<SystemLookup> findByCategoryAndIsActiveTrue(String category);
 }

@@ -1,7 +1,10 @@
 package com.ledgerhub.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.ledgerhub.model.db.SystemLookup;
 import com.ledgerhub.model.db.User;
+import com.ledgerhub.model.dto.user.RoleDTO;
 import com.ledgerhub.model.dto.user.UserRequestDTO;
 import com.ledgerhub.model.dto.user.UserResponseDTO;
 import com.ledgerhub.repository.SystemLookupRepository;
@@ -50,8 +54,7 @@ public class UserService implements IUserService {
 	@Override
 	public UserResponseDTO create(UserRequestDTO dto) {
 
-		SystemLookup role = lookupRepository.findById(dto.getRoleId())
-				.orElseThrow(() -> new IllegalArgumentException("Invalid role ID"));
+		Set<SystemLookup> roles = new HashSet<>(lookupRepository.findAllById(dto.getRoleId()));
 
 		SystemLookup lang = dto.getPreferredLangId() != null
 				? lookupRepository.findById(dto.getPreferredLangId()).orElse(null)
@@ -59,7 +62,7 @@ public class UserService implements IUserService {
 
 		User user = User.builder().email(dto.getEmail()).password(passwordEncoder.encode(dto.getPassword()))
 				.abbreviation(dto.getAbbreviation()).preferredLang(lang).preferredColor(dto.getPreferredColor())
-				.role(role).build();
+				.roles(roles).build();
 
 		return toDto(userRepository.save(user));
 	}
@@ -69,8 +72,7 @@ public class UserService implements IUserService {
 
 		User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-		SystemLookup role = lookupRepository.findById(dto.getRoleId())
-				.orElseThrow(() -> new IllegalArgumentException("Invalid role ID"));
+		Set<SystemLookup> roles = new HashSet<>(lookupRepository.findAllById(dto.getRoleId()));
 
 		SystemLookup lang = dto.getPreferredLangId() != null
 				? lookupRepository.findById(dto.getPreferredLangId()).orElse(null)
@@ -80,7 +82,7 @@ public class UserService implements IUserService {
 		user.setAbbreviation(dto.getAbbreviation());
 		user.setPreferredColor(dto.getPreferredColor());
 		user.setPreferredLang(lang);
-		user.setRole(role);
+		user.setRoles(roles);
 
 		if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
 			user.setPassword(passwordEncoder.encode(dto.getPassword()));
@@ -119,9 +121,13 @@ public class UserService implements IUserService {
 
 	private UserResponseDTO toDto(User user) {
 		return UserResponseDTO.builder().id(user.getId()).email(user.getEmail()).abbreviation(user.getAbbreviation())
-				.preferredColor(user.getPreferredColor()).role(user.getRole().getCode())
+				.preferredColor(user.getPreferredColor()).roles(rolesDTO(user.getRoles()))
 				.preferredLang(user.getPreferredLang() != null ? user.getPreferredLang().getCode() : null)
 				.active(user.getActive()).createdAt(user.getCreatedAt()).build();
+	}
+
+	private List<RoleDTO> rolesDTO(Set<SystemLookup> roles) {
+		return roles.stream().map(x -> new RoleDTO(x.getId(), x.getDescription())).collect(Collectors.toList());
 	}
 
 }
