@@ -8,5 +8,5 @@ import com.ledgerhub.model.db.ProfilePerson;
 
 public interface ProfilePersonRepository extends JpaRepository<ProfilePerson, Long> {
 
-	List<ProfilePerson> findByprofileId(Long profileId);
+	List<ProfilePerson> findByProfileId(Long profileId);
 }

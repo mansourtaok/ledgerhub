@@ -28,7 +28,8 @@ public class ProfileService implements IProfileService {
 	@Override
 	public ProfileDTO create(ProfileDTO dto, Long userId) {
 		Profile profile = mapToEntity(dto);
-		profile.setCreatedUser(userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found")));
+		profile.setCreatedUser(
+				userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found")));
 		return mapToDTO(profileRepository.save(profile));
 	}
 
@@ -42,8 +43,7 @@ public class ProfileService implements IProfileService {
 	public Page<ProfileDTO> getAll(String name, Long categoryId, Long typeId, Pageable pageable) {
 
 		Specification<Profile> spec = Specification.where(ProfileSpecification.fullNameLike(name))
-				.and(ProfileSpecification.categoryEquals(categoryId))
-				.and(ProfileSpecification.typeEquals(typeId));
+				.and(ProfileSpecification.categoryEquals(categoryId)).and(ProfileSpecification.typeEquals(typeId));
 
 		return profileRepository.findAll(spec, pageable).map(this::mapToDTO);
 	}
@@ -95,18 +95,13 @@ public class ProfileService implements IProfileService {
 
 	private Profile mapToEntity(ProfileDTO dto) {
 		Profile profile = Profile.builder().name(dto.getName()).address(dto.getAddress())
-				.contactNumber(dto.getContactNumber()).faxNumber(dto.getFaxNumber())
-				.taxNumber(dto.getTaxNumber()).vendorAccount(dto.getVendorAccountNumber())
-				.customerAccount(dto.getCustomerAccountNumber()).build();
+				.contactNumber(dto.getContactNumber()).faxNumber(dto.getFaxNumber()).taxNumber(dto.getTaxNumber())
+				.vendorAccount(dto.getVendorAccountNumber()).customerAccount(dto.getCustomerAccountNumber())
+				.countryId(dto.getCountryId()).build();
 
 		if (dto.getCompanyId() != null) {
 			profile.setCompany(companyRepository.findById(dto.getCompanyId())
 					.orElseThrow(() -> new RuntimeException("Company not found")));
-		}
-		
-		if (dto.getCountryId() != null) {
-			profile.setCountry(systemLookupRepository.findById(dto.getCountryId())
-					.orElseThrow(() -> new RuntimeException("Country not found")));
 		}
 
 		if (dto.getCategoryId() != null) {
@@ -134,11 +129,11 @@ public class ProfileService implements IProfileService {
 
 	private ProfileDTO mapToDTO(Profile s) {
 		return ProfileDTO.builder().id(s.getId()).companyId(s.getCompany() != null ? s.getCompany().getId() : null)
-				.name(s.getName()).categoryId(s.getCategoryId().getId())
-				.typeId(s.getTypeId().getId()).address(s.getAddress()).countryId(s.getCountry().getId())
-				.currencyId(s.getCurrencyId().getId()).paymentTerm(s.getPaymentTerm().getId())
-				.contactNumber(s.getContactNumber()).faxNumber(s.getFaxNumber()).taxNumber(s.getTaxNumber())
-				.vendorAccountNumber(s.getVendorAccount()).customerAccountNumber(s.getCustomerAccount()).build();
+				.name(s.getName()).categoryId(s.getCategoryId().getId()).typeId(s.getTypeId().getId())
+				.address(s.getAddress()).countryId(s.getCountryId()).currencyId(s.getCurrencyId().getId())
+				.paymentTerm(s.getPaymentTerm().getId()).contactNumber(s.getContactNumber()).faxNumber(s.getFaxNumber())
+				.taxNumber(s.getTaxNumber()).vendorAccountNumber(s.getVendorAccount())
+				.customerAccountNumber(s.getCustomerAccount()).build();
 	}
-	
+
 }

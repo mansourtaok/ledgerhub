@@ -7,13 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ledgerhub.model.db.ProfilePerson;
-import com.ledgerhub.model.db.Company;
-import com.ledgerhub.model.db.Profile;
 import com.ledgerhub.model.db.SystemLookup;
 import com.ledgerhub.model.dto.ProfilePersonDTO;
-import com.ledgerhub.repository.ProfileRepository;
 import com.ledgerhub.repository.ProfilePersonRepository;
-import com.ledgerhub.repository.CompanyRepository;
 import com.ledgerhub.repository.SystemLookupRepository;
 import com.ledgerhub.service.profilePerson.IProfilePersonService;
 
@@ -26,8 +22,6 @@ import lombok.RequiredArgsConstructor;
 public class ProfilePersonService implements IProfilePersonService {
 
 	private final ProfilePersonRepository profilePersonRepository;
-	private final CompanyRepository companyRepository;
-	private final ProfileRepository profileRepository;
 	private final SystemLookupRepository systemLookupRepository;
 
 	/* ================= CREATE ================= */
@@ -35,17 +29,12 @@ public class ProfilePersonService implements IProfilePersonService {
 	@Override
 	public ProfilePersonDTO create(Long companyId, ProfilePersonDTO dto) {
 
-		Company company = companyRepository.findById(companyId)
-				.orElseThrow(() -> new EntityNotFoundException("Company not found"));
-
-		Profile profile = profileRepository.findById(dto.getProfileId())
-				.orElseThrow(() -> new EntityNotFoundException("Profile not found"));
-
 		SystemLookup jobeDescription = systemLookupRepository.findById(dto.getJobDescriptionId())
 				.orElseThrow(() -> new EntityNotFoundException("Job Description not found"));
 
-		ProfilePerson profilePerson = ProfilePerson.builder().company(company).profileId(profile).jobDescription(jobeDescription).name(dto.getName())
-				.email(dto.getEmail()).contactNumber(dto.getContactNumber()).extension(dto.getExtension()).build();
+		ProfilePerson profilePerson = ProfilePerson.builder().companyId(dto.getCompanyId())
+				.profileId(dto.getProfileId()).jobDescription(jobeDescription).name(dto.getName()).email(dto.getEmail())
+				.contactNumber(dto.getContactNumber()).extension(dto.getExtension()).build();
 
 		profilePersonRepository.save(profilePerson);
 		return mapToDto(profilePerson);
@@ -85,7 +74,7 @@ public class ProfilePersonService implements IProfilePersonService {
 	@Transactional(readOnly = true)
 	public List<ProfilePersonDTO> getByCompany(Long companyId) {
 
-		return profilePersonRepository.findByprofileId(companyId).stream().map(this::mapToDto).toList();
+		return profilePersonRepository.findByProfileId(companyId).stream().map(this::mapToDto).toList();
 	}
 
 	/* ================= DELETE ================= */
@@ -100,13 +89,15 @@ public class ProfilePersonService implements IProfilePersonService {
 	/* ================= INTERNAL HELPERS ================= */
 
 	/**
-	 * Ensures: - Profile Person exists - Profile Person belongs to the given profile
+	 * Ensures: - Profile Person exists - Profile Person belongs to the given
+	 * profile
 	 */
 	private ProfilePerson getProfilePersonForProfile(Long profileId, Long profilePersonId) {
 
-		ProfilePerson profilePerson = profilePersonRepository.findById(profilePersonId).orElseThrow(() -> new EntityNotFoundException("Profile Person not found"));
+		ProfilePerson profilePerson = profilePersonRepository.findById(profilePersonId)
+				.orElseThrow(() -> new EntityNotFoundException("Profile Person not found"));
 
-		if (!profilePerson.getProfileId().getId().equals(profileId)) {
+		if (!profilePerson.getProfileId().equals(profileId)) {
 			throw new AccessDeniedException("Profile Person does not belong to the given profile");
 		}
 
@@ -115,9 +106,9 @@ public class ProfilePersonService implements IProfilePersonService {
 
 	private ProfilePersonDTO mapToDto(ProfilePerson profilePerson) {
 
-		return ProfilePersonDTO.builder().id(profilePerson.getId()).name(profilePerson.getName()).email(profilePerson.getEmail())
-				.contactNumber(profilePerson.getContactNumber()).extension(profilePerson.getExtension())
-				.profileId(profilePerson.getProfileId().getId()).companyId(profilePerson.getCompany().getId())
-				.build();
+		return ProfilePersonDTO.builder().id(profilePerson.getId()).name(profilePerson.getName())
+				.email(profilePerson.getEmail()).contactNumber(profilePerson.getContactNumber())
+				.extension(profilePerson.getExtension()).profileId(profilePerson.getProfileId())
+				.companyId(profilePerson.getCompanyId()).build();
 	}
 }

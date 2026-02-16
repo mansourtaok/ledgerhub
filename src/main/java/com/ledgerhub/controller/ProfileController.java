@@ -7,10 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,10 +15,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.ledgerhub.model.dto.profile.ProfileDTO;
-import com.ledgerhub.service.profile.IProfileExcelService;
 import com.ledgerhub.service.profile.IProfileService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -76,8 +71,8 @@ public class ProfileController {
 	}
 
 	@PutMapping("/api/profiles/{id}")
-	public ResponseEntity<ProfileDTO> update(@PathVariable("id") Long id, @RequestBody ProfileDTO dto,
-			@RequestParam Long userId) {
+	public ResponseEntity<ProfileDTO> update(@PathVariable(name = "id") Long id, @RequestBody ProfileDTO dto,
+			@RequestParam(name = "userId") Long userId) {
 		return ResponseEntity.ok(profileService.update(id, dto, userId));
 	}
 /*

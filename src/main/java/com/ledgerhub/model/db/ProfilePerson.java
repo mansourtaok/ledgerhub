@@ -32,13 +32,11 @@ public class ProfilePerson {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "company_id", nullable = false)
-	private Company company;
+	@Column(name = "company_id", nullable = false)
+	private Long companyId;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "profile_id", nullable = false)
-	private Profile profileId;
+	@Column(name = "profile_id", length = 50)
+	private Long profileId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "job_description_id", nullable = false)
@@ -63,7 +61,7 @@ public class ProfilePerson {
 
 	@Column(name = "extension", length = 10)
 	private String extension;
-	
+
 	@Column(name = "created_at", updatable = false)
 	private LocalDateTime createdAt;
 
