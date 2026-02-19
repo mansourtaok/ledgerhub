@@ -14,6 +14,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.ledgerhub.security.TokenAuthenticationFilter;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 @Configuration
 public class SecurityConfig {
 
@@ -28,11 +30,15 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.csrf(csrf -> csrf.disable()) // disable for APIs
-				.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/greet", "/auth/login", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
-						.permitAll().anyRequest().authenticated())
+				.authorizeHttpRequests(auth -> auth.requestMatchers("/greet", "/auth/login", "/v3/api-docs/**",
+						"/swagger-ui/**", "/swagger-ui.html").permitAll().anyRequest().authenticated())
 				.addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-				.httpBasic(Customizer.withDefaults());
+				.httpBasic(Customizer.withDefaults()).exceptionHandling(
+						exception -> exception.authenticationEntryPoint((request, response, authException) -> {
+							response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+							response.getWriter().write("Unauthorized");
+						}));
+		;
 
 		return http.build();
 	}
