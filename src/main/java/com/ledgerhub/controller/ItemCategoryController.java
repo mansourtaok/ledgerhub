@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,11 +18,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ledgerhub.model.dto.items.ItemCategoryRequestDTO;
 import com.ledgerhub.model.dto.items.ItemCategoryResponseDTO;
 import com.ledgerhub.service.items.IItemCategoryService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -73,5 +76,14 @@ public class ItemCategoryController {
 		Pageable pageable = PageRequest.of(page, size, sorting);
 
 		return service.findAll(companyId, label, parentId, pageable);
+	}
+
+	@PostMapping("/api/companies/{companyId}/categories/import")
+	public ResponseEntity<String> importCategories(@PathVariable(name = "companyId") Long companyId,
+			@RequestParam(name = "file") MultipartFile file, HttpServletRequest request) {
+
+		service.importFromExcel(companyId, file, request);
+
+		return ResponseEntity.ok("Categories imported successfully");
 	}
 }

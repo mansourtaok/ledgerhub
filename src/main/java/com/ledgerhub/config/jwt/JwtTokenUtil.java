@@ -54,7 +54,14 @@ public class JwtTokenUtil implements Serializable {
 		return getClaimFromToken(token, Claims::getExpiration);
 	}
 
+	public Long getUserIdFromToken(String token) {
+		return getClaimFromToken(token, claims -> claims.get("user_id", Long.class));
+	}
+
 	public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
+		if (token != null && token.startsWith("Bearer ")) {
+			token = token.substring(7);
+		}
 		final Claims claims = getAllClaimsFromToken(token);
 		return claimsResolver.apply(claims);
 	}
@@ -81,8 +88,9 @@ public class JwtTokenUtil implements Serializable {
 	 * ========================= Token generation =========================
 	 */
 
-	public String generateToken(UserDetails userDetails) {
+	public String generateToken(Long userId, UserDetails userDetails) {
 		Map<String, Object> claims = new HashMap<>();
+		claims.put("user_id", userId);
 		return doGenerateToken(claims, userDetails.getUsername());
 	}
 
