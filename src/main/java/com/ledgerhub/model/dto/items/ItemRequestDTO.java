@@ -8,9 +8,9 @@ import lombok.Data;
 @Data
 public class ItemRequestDTO {
 
-	private Integer companyId;
-	private Integer categoryId;
-	private Integer currencyId;
+	private Long companyId;
+	private Long categoryId;
+	private Long currencyId;
 	private String name;
 	private String sku;
 	private String description;

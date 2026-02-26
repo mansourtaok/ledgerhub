@@ -12,7 +12,7 @@ public class ItemResponseDTO {
 	private Long id;
 	private String name;
 	private String sku;
-	private Integer categoryId;
+	private Long categoryId;
 	private BigDecimal sellingPrice;
 	private BigDecimal stockQuantity;
 	private Boolean status;

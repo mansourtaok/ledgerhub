@@ -31,13 +31,13 @@ public class Item {
 	private Long id;
 
 	@Column(name = "company_id", nullable = false)
-	private Integer companyId;
+	private Long companyId;
 
 	@Column(name = "category_id")
-	private Integer categoryId;
+	private Long categoryId;
 
 	@Column(name = "currency_id")
-	private Integer currencyId;
+	private Long currencyId;
 
 	@Column(nullable = false, length = 150)
 	private String name;
@@ -98,9 +98,9 @@ public class Item {
 
 	private LocalDateTime createdAt;
 
-	private Integer createdUserid;
+	private Long createdUserid;
 
 	private LocalDateTime lastUpdateAt;
 
-	private Integer lastUpdateUserid;
+	private Long lastUpdateUserid;
 }

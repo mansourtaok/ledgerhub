@@ -3,6 +3,7 @@ package com.ledgerhub.controller;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,11 +12,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ledgerhub.model.dto.items.ItemRequestDTO;
 import com.ledgerhub.model.dto.items.ItemResponseDTO;
 import com.ledgerhub.service.items.impl.ItemService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -52,5 +55,12 @@ public class ItemController {
 	@DeleteMapping("/api/items/{id}")
 	public void delete(@PathVariable Long id) {
 		itemService.delete(id);
+	}
+
+	@PostMapping("/api/companies/{companyId}/items/import")
+	public ResponseEntity<String> importItems(@PathVariable Long companyId,
+			@RequestParam(name = "file") MultipartFile file, HttpServletRequest request) {
+		itemService.importFromExcel(companyId, file, request);
+		return ResponseEntity.ok("Items imported successfully");
 	}
 }
