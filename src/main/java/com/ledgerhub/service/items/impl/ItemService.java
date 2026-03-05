@@ -17,12 +17,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ledgerhub.config.jwt.JwtTokenUtil;
+import com.ledgerhub.model.db.BaseEntity;
 import com.ledgerhub.model.db.items.Item;
 import com.ledgerhub.model.dto.items.ItemRequestDTO;
 import com.ledgerhub.model.dto.items.ItemResponseDTO;
+import com.ledgerhub.repository.EntityRepository;
 import com.ledgerhub.repository.ItemCategoryRepository;
 import com.ledgerhub.repository.ItemRepository;
 import com.ledgerhub.repository.SystemLookupRepository;
@@ -37,17 +40,22 @@ import lombok.RequiredArgsConstructor;
 public class ItemService implements IItemService {
 
 	private final ItemRepository itemRepository;
+	private final EntityRepository entityRepository;
 	private final SystemLookupRepository systemLookupRepository;
 	private final ItemCategoryRepository itemCategoryRepository;
 	private final JwtTokenUtil jwtTokenUtil;
 
+	@Transactional
 	@Override
 	public ItemResponseDTO create(ItemRequestDTO dto) {
+
+		BaseEntity entity = BaseEntity.builder().entityType("ITEM").build();
+		entity = entityRepository.save(entity);
 
 		Item item = Item.builder().companyId(dto.getCompanyId()).categoryId(dto.getCategoryId())
 				.currencyId(dto.getCurrencyId()).name(dto.getName()).sku(dto.getSku()).description(dto.getDescription())
 				.costPrice(dto.getCostPrice()).sellingPrice(dto.getSellingPrice()).createdAt(LocalDateTime.now())
-				.stockQtyNotify(dto.getStockQtyNotify()).stockQuantity(dto.getStockQuantity()).build();
+				.stockQtyNotify(dto.getStockQtyNotify()).stockQuantity(dto.getStockQuantity()).entity(entity).build();
 
 		item = itemRepository.save(item);
 
