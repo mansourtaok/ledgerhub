@@ -1,10 +1,14 @@
 package com.ledgerhub.service.items.impl;
 
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -22,9 +26,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ledgerhub.config.jwt.JwtTokenUtil;
 import com.ledgerhub.model.db.BaseEntity;
+import com.ledgerhub.model.db.Document;
 import com.ledgerhub.model.db.items.Item;
 import com.ledgerhub.model.dto.items.ItemRequestDTO;
 import com.ledgerhub.model.dto.items.ItemResponseDTO;
+import com.ledgerhub.repository.DocumentRepository;
 import com.ledgerhub.repository.EntityRepository;
 import com.ledgerhub.repository.ItemCategoryRepository;
 import com.ledgerhub.repository.ItemRepository;
@@ -43,7 +49,11 @@ public class ItemService implements IItemService {
 	private final EntityRepository entityRepository;
 	private final SystemLookupRepository systemLookupRepository;
 	private final ItemCategoryRepository itemCategoryRepository;
+	private final DocumentRepository documentRepository;
 	private final JwtTokenUtil jwtTokenUtil;
+
+	// TODO change to app properties
+	private static final String uploadDir = "C:\\Users\\User\\Documents\\Mansour\\projects\\ledgerhub";
 
 	@Transactional
 	@Override
@@ -51,6 +61,32 @@ public class ItemService implements IItemService {
 
 		BaseEntity entity = BaseEntity.builder().entityType("ITEM").build();
 		entity = entityRepository.save(entity);
+
+		List<String> documentPaths = new ArrayList<>();
+		MultipartFile[] files = dto.getFiles();
+		if (files != null) {
+			for (MultipartFile file : files) {
+
+				String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
+				Path path = Paths.get(uploadDir + filename);
+
+				try {
+					Files.createDirectories(path.getParent());
+					Files.write(path, file.getBytes());
+				} catch (Exception e) {
+					throw new RuntimeException("File upload failed");
+				}
+
+				Document doc = new Document();
+				doc.setFilename(file.getOriginalFilename());
+				doc.setFilepath(path.toString());
+				doc.setReferenceId(entity.getId());
+
+				documentRepository.save(doc);
+
+				documentPaths.add(path.toString());
+			}
+		}
 
 		Item item = Item.builder().companyId(dto.getCompanyId()).categoryId(dto.getCategoryId())
 				.currencyId(dto.getCurrencyId()).name(dto.getName()).sku(dto.getSku()).description(dto.getDescription())

@@ -3,6 +3,8 @@ package com.ledgerhub.model.dto.items;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.Data;
 
 @Data
@@ -36,4 +38,6 @@ public class ItemRequestDTO {
 	private Boolean onlineSale;
 	private Boolean status;
 	private BigDecimal stockQuantity;
+
+	private MultipartFile[] files;
 }

@@ -1,6 +1,7 @@
 package com.ledgerhub.model.dto.items;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import lombok.Builder;
 import lombok.Data;
@@ -16,4 +17,5 @@ public class ItemResponseDTO {
 	private BigDecimal sellingPrice;
 	private BigDecimal stockQuantity;
 	private Boolean status;
+	private List<String> documents;
 }

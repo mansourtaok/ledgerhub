@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -28,8 +29,9 @@ public class ItemController {
 	private final ItemService itemService;
 
 	@PostMapping("/api/items")
-	public ItemResponseDTO create(@RequestBody ItemRequestDTO dto) {
-		return itemService.create(dto);
+
+	public ItemResponseDTO create(@ModelAttribute("item") ItemRequestDTO itemRequestDTO) {
+		return itemService.create(itemRequestDTO);
 	}
 
 	@GetMapping("/api/items/{id}")
