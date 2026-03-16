@@ -1,0 +1,1 @@
+ALTER TABLE expense_types ADD COLUMN active BOOLEAN DEFAULT TRUE;
