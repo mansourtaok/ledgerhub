@@ -1,4 +1,8 @@
-FROM eclipse-temurin:21-jdk
+FROM eclipse-temurin:21-jdk AS build
 WORKDIR /app
-COPY target/*.jar app.jar
+COPY . .
+RUN ./gradlew build -x test
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+COPY --from=build /app/build/libs/*.jar app.jar
 ENTRYPOINT ["java","-jar","/app/app.jar"]
