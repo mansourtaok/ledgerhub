@@ -6,17 +6,20 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.ledgerhub.model.dto.ErrorResponse;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
 	@ExceptionHandler(BadCredentialsException.class)
-	public ResponseEntity<String> handleBadCredentials(BadCredentialsException ex) {
-		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
+	public ResponseEntity<ErrorResponse> handleBadCredentials(BadCredentialsException ex) {
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+				.body(new ErrorResponse("INVALID_CREDENTIALS", "Invalid username or password"));
 	}
 
 	@ExceptionHandler(Exception.class)
-	public ResponseEntity<String> handleGeneric(Exception ex) {
+	public ResponseEntity<ErrorResponse> handleGeneric(Exception ex) {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body("Internal Server Error: " + ex.getMessage());
+				.body(new ErrorResponse("INTERNAL_ERROR", "An unexpected error occurred"));
 	}
 }
