@@ -1,14 +1,24 @@
 package com.ledgerhub.service.impl;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.ledgerhub.model.db.BaseEntity;
 import com.ledgerhub.model.db.Company;
 import com.ledgerhub.model.db.Country;
+import com.ledgerhub.model.db.Document;
 import com.ledgerhub.model.dto.company.CompanyDTO;
 import com.ledgerhub.repository.CompanyRepository;
 import com.ledgerhub.repository.CountryRepository;
+import com.ledgerhub.repository.DocumentRepository;
+import com.ledgerhub.repository.EntityRepository;
 import com.ledgerhub.service.ICompanyService;
 
 import lombok.RequiredArgsConstructor;
@@ -19,10 +29,35 @@ public class CompanyService implements ICompanyService {
 
 	private final CompanyRepository companyRepository;
 	private final CountryRepository countryRepository;
+	private final EntityRepository entityRepository;
+	private final DocumentRepository documentRepository;
 
+	private static final String uploadDir = "C:\\Users\\User\\Documents\\Mansour\\projects\\ledgerhub";
+
+	@Transactional
 	@Override
 	public CompanyDTO create(CompanyDTO dto) {
+		BaseEntity entity = entityRepository.save(BaseEntity.builder().entityType("COMPANY").build());
+
+		MultipartFile image = dto.getImage();
+		if (image != null && !image.isEmpty()) {
+			String filename = UUID.randomUUID() + "_" + image.getOriginalFilename();
+			Path path = Paths.get(uploadDir, filename);
+			try {
+				Files.createDirectories(path.getParent());
+				Files.write(path, image.getBytes());
+			} catch (Exception e) {
+				throw new RuntimeException("File upload failed");
+			}
+			Document doc = new Document();
+			doc.setFilename(image.getOriginalFilename());
+			doc.setFilepath(path.toString());
+			doc.setReferenceId(entity.getId());
+			documentRepository.save(doc);
+		}
+
 		Company company = mapToEntity(dto);
+		company.setEntityId(entity.getId());
 		return mapToDTO(companyRepository.save(company));
 	}
 
@@ -37,6 +72,7 @@ public class CompanyService implements ICompanyService {
 		return companyRepository.findAll().stream().map(this::mapToDTO).toList();
 	}
 
+	@Transactional
 	@Override
 	public CompanyDTO update(Long id, CompanyDTO dto) {
 		Company company = companyRepository.findById(id).orElseThrow(() -> new RuntimeException("Company not found"));
@@ -48,12 +84,37 @@ public class CompanyService implements ICompanyService {
 		company.setTaxNumber(dto.getTaxNumber());
 		company.setHeader(dto.getHeader());
 		company.setFooter(dto.getFooter());
+		company.setWebsite(dto.getWebsite());
 		company.setActive(dto.getActive());
 
 		if (dto.getCountryId() != null) {
 			Country country = countryRepository.findById(dto.getCountryId())
 					.orElseThrow(() -> new RuntimeException("Country not found"));
 			company.setCountry(country);
+		}
+
+		MultipartFile image = dto.getImage();
+		if (image != null && !image.isEmpty()) {
+			if (company.getEntityId() == null) {
+				BaseEntity entity = entityRepository.save(BaseEntity.builder().entityType("COMPANY").build());
+				company.setEntityId(entity.getId());
+			} else {
+				documentRepository.findByReferenceId(company.getEntityId())
+						.forEach(doc -> documentRepository.delete(doc));
+			}
+			String filename = UUID.randomUUID() + "_" + image.getOriginalFilename();
+			Path path = Paths.get(uploadDir, filename);
+			try {
+				Files.createDirectories(path.getParent());
+				Files.write(path, image.getBytes());
+			} catch (Exception e) {
+				throw new RuntimeException("File upload failed");
+			}
+			Document doc = new Document();
+			doc.setFilename(image.getOriginalFilename());
+			doc.setFilepath(path.toString());
+			doc.setReferenceId(company.getEntityId());
+			documentRepository.save(doc);
 		}
 
 		return mapToDTO(companyRepository.save(company));
@@ -69,7 +130,7 @@ public class CompanyService implements ICompanyService {
 	private Company mapToEntity(CompanyDTO dto) {
 		Company company = Company.builder().name(dto.getName()).email(dto.getEmail()).phone(dto.getPhone())
 				.address(dto.getAddress()).taxNumber(dto.getTaxNumber()).header(dto.getHeader()).footer(dto.getFooter())
-				.active(dto.getActive()).build();
+				.website(dto.getWebsite()).active(dto.getActive()).build();
 
 		if (dto.getCountryId() != null) {
 			Country country = countryRepository.findById(dto.getCountryId())
@@ -80,10 +141,15 @@ public class CompanyService implements ICompanyService {
 	}
 
 	private CompanyDTO mapToDTO(Company entity) {
+		String document = null;
+		if (entity.getEntityId() != null) {
+			document = documentRepository.findByReferenceId(entity.getEntityId()).stream()
+					.map(Document::getFilepath).findFirst().orElse(null);
+		}
 		return CompanyDTO.builder().id(entity.getId()).name(entity.getName()).email(entity.getEmail())
 				.phone(entity.getPhone()).address(entity.getAddress()).taxNumber(entity.getTaxNumber())
-				.header(entity.getHeader()).footer(entity.getFooter())
+				.header(entity.getHeader()).footer(entity.getFooter()).website(entity.getWebsite())
 				.countryId(entity.getCountry() != null ? entity.getCountry().getId() : null).active(entity.getActive())
-				.build();
+				.document(document).build();
 	}
 }

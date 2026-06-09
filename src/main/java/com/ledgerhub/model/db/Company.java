@@ -52,9 +52,15 @@ public class Company {
 	@Column(length = 200)
 	private String footer;
 
+	@Column(length = 255)
+	private String website;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "country_id")
 	private Country country;
+
+	@Column(name = "entity_id")
+	private Long entityId;
 
 	@Column(name = "created_at", updatable = false)
 	private LocalDateTime createdAt;

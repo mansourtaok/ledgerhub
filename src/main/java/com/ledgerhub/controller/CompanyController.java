@@ -1,14 +1,15 @@
 package com.ledgerhub.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,8 +27,8 @@ public class CompanyController {
 
 	private final CompanyService companyService;
 
-	@PostMapping
-	public ResponseEntity<CompanyDTO> create(@RequestBody CompanyDTO dto) {
+	@PostMapping(consumes = { "multipart/form-data", "application/json" })
+	public ResponseEntity<CompanyDTO> create(@ModelAttribute CompanyDTO dto) {
 		return ResponseEntity.ok(companyService.create(dto));
 	}
 
@@ -37,12 +38,13 @@ public class CompanyController {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<CompanyDTO>> getAll() {
-		return ResponseEntity.ok(companyService.getAll());
+	public ResponseEntity<Map<String, Object>> getAll() {
+		List<CompanyDTO> companies = companyService.getAll();
+		return ResponseEntity.ok(Map.of("totalData", companies.size(), "data", companies));
 	}
 
-	@PutMapping("/{id}")
-	public ResponseEntity<CompanyDTO> update(@PathVariable Long id, @RequestBody CompanyDTO dto) {
+	@PutMapping(value = "/{id}", consumes = { "multipart/form-data", "application/json" })
+	public ResponseEntity<CompanyDTO> update(@PathVariable("id") Long id, @ModelAttribute CompanyDTO dto) {
 		return ResponseEntity.ok(companyService.update(id, dto));
 	}
 

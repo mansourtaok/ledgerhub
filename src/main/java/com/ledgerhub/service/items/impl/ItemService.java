@@ -68,7 +68,7 @@ public class ItemService implements IItemService {
 			for (MultipartFile file : files) {
 
 				String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
-				Path path = Paths.get(uploadDir + filename);
+				Path path = Paths.get(uploadDir, filename);
 
 				try {
 					Files.createDirectories(path.getParent());
@@ -259,8 +259,10 @@ public class ItemService implements IItemService {
 	}
 
 	private ItemResponseDTO mapToResponse(Item item) {
+		List<String> documents = documentRepository.findByReferenceId(item.getId()).stream()
+				.map(Document::getFilepath).toList();
 		return ItemResponseDTO.builder().id(item.getId()).name(item.getName()).sku(item.getSku())
 				.categoryId(item.getCategoryId()).sellingPrice(item.getSellingPrice())
-				.stockQuantity(item.getStockQuantity()).status(item.getStatus()).build();
+				.stockQuantity(item.getStockQuantity()).status(item.getStatus()).documents(documents).build();
 	}
 }
