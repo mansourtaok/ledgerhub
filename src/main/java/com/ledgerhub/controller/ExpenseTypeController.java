@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,33 +22,32 @@ import com.ledgerhub.service.expenses.IExpenseTypeService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
+@RequestMapping("/api/expense-types")
 @RequiredArgsConstructor
 public class ExpenseTypeController {
 
 	private final IExpenseTypeService expTypService;
 
-	@PostMapping("/api/expense-types/{companyId}")
+	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public ExpenseTypeResponseDTO create(@RequestBody ExpenseTypeRequestDTO dto, @PathVariable("companyId") Long companyId) {
+	public ExpenseTypeResponseDTO create(@RequestBody ExpenseTypeRequestDTO dto,
+			@RequestHeader("X-Company-Id") Long companyId) {
 		return expTypService.create(dto, companyId);
 	}
 
-	@PutMapping("/api/expense-types/{id}")
+	@PutMapping("/{id}")
 	public ExpenseTypeResponseDTO update(@PathVariable("id") Long id, @RequestBody ExpenseTypeRequestDTO dto) {
 		return expTypService.update(id, dto);
 	}
 
-	@DeleteMapping("/api/expense-types/{id}")
+	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void delete(@PathVariable("id") Long id) {
 		expTypService.delete(id);
 	}
-	
-	@GetMapping("/api/expense-types/{companyId}")
-	public ResponseEntity<List<ExpenseTypeResponseDTO>> list(@PathVariable("companyId") Long companyId) {
 
-	    List<ExpenseTypeResponseDTO> list = expTypService.findAll(companyId);
-	    return ResponseEntity.ok(list);
+	@GetMapping
+	public ResponseEntity<List<ExpenseTypeResponseDTO>> list(@RequestHeader("X-Company-Id") Long companyId) {
+		return ResponseEntity.ok(expTypService.findAll(companyId));
 	}
-
 }

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,7 +20,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/companies/{companyId}/banks")
+@RequestMapping("/api/banks")
 @Tag(name = "Company Banks Controller")
 @RequiredArgsConstructor
 public class BankController {
@@ -27,26 +28,26 @@ public class BankController {
 	private final IBankService bankService;
 
 	@PostMapping
-	public ResponseEntity<BankDTO> create(@PathVariable Long companyId, @RequestBody BankDTO dto) {
+	public ResponseEntity<BankDTO> create(@RequestHeader("X-Company-Id") Long companyId, @RequestBody BankDTO dto) {
 
 		return ResponseEntity.ok(bankService.create(companyId, dto));
 	}
 
 	@GetMapping
-	public ResponseEntity<List<BankDTO>> list(@PathVariable Long companyId) {
+	public ResponseEntity<List<BankDTO>> list(@RequestHeader("X-Company-Id") Long companyId) {
 
 		return ResponseEntity.ok(bankService.getByCompany(companyId));
 	}
 
 	@PutMapping("/{bankId}")
-	public ResponseEntity<BankDTO> update(@PathVariable Long companyId, @PathVariable Long bankId,
+	public ResponseEntity<BankDTO> update(@RequestHeader("X-Company-Id") Long companyId, @PathVariable Long bankId,
 			@RequestBody BankDTO dto) {
 
 		return ResponseEntity.ok(bankService.update(companyId, bankId, dto));
 	}
 
 	@DeleteMapping("/{bankId}")
-	public ResponseEntity<Void> delete(@PathVariable Long companyId, @PathVariable Long bankId) {
+	public ResponseEntity<Void> delete(@RequestHeader("X-Company-Id") Long companyId, @PathVariable Long bankId) {
 
 		bankService.delete(companyId, bankId);
 		return ResponseEntity.noContent().build();

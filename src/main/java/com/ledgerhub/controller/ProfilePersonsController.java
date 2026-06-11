@@ -19,7 +19,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/profiles/{companyId}/banks")
+@RequestMapping("/api/profiles/{profileId}/persons")
 @Tag(name = "Profile Persons Controller")
 @RequiredArgsConstructor
 public class ProfilePersonsController {
@@ -27,28 +27,24 @@ public class ProfilePersonsController {
 	private final IProfilePersonService profilePersonsService;
 
 	@PostMapping
-	public ResponseEntity<ProfilePersonDTO> create(@PathVariable Long companyId, @RequestBody ProfilePersonDTO dto) {
-
-		return ResponseEntity.ok(profilePersonsService.create(companyId, dto));
+	public ResponseEntity<ProfilePersonDTO> create(@PathVariable Long profileId, @RequestBody ProfilePersonDTO dto) {
+		return ResponseEntity.ok(profilePersonsService.create(profileId, dto));
 	}
 
 	@GetMapping
-	public ResponseEntity<List<ProfilePersonDTO>> list(@PathVariable Long companyId) {
-
-		return ResponseEntity.ok(profilePersonsService.getByCompany(companyId));
+	public ResponseEntity<List<ProfilePersonDTO>> list(@PathVariable Long profileId) {
+		return ResponseEntity.ok(profilePersonsService.getByCompany(profileId));
 	}
 
 	@PutMapping("/{profilePersonId}")
-	public ResponseEntity<ProfilePersonDTO> update(@PathVariable Long companyId, @PathVariable Long profilePersonId,
-			@RequestBody ProfilePersonDTO dto) {
-
-		return ResponseEntity.ok(profilePersonsService.update(companyId, profilePersonId, dto));
+	public ResponseEntity<ProfilePersonDTO> update(@PathVariable Long profileId,
+			@PathVariable Long profilePersonId, @RequestBody ProfilePersonDTO dto) {
+		return ResponseEntity.ok(profilePersonsService.update(profileId, profilePersonId, dto));
 	}
 
 	@DeleteMapping("/{profilePersonId}")
-	public ResponseEntity<Void> delete(@PathVariable Long companyId, @PathVariable Long profilePersonId) {
-
-		profilePersonsService.delete(companyId, profilePersonId);
+	public ResponseEntity<Void> delete(@PathVariable Long profileId, @PathVariable Long profilePersonId) {
+		profilePersonsService.delete(profileId, profilePersonId);
 		return ResponseEntity.noContent().build();
 	}
 }

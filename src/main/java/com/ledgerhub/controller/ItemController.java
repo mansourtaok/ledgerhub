@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,24 +25,24 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @RestController
+@RequestMapping("/api/items")
 @RequiredArgsConstructor
 public class ItemController {
 
 	private final ItemService itemService;
 
-	@PostMapping("/api/items")
-
+	@PostMapping
 	public ItemResponseDTO create(@ModelAttribute("item") ItemRequestDTO itemRequestDTO) {
 		return itemService.create(itemRequestDTO);
 	}
 
-	@GetMapping("/api/items/{id}")
+	@GetMapping("/{id}")
 	public ItemResponseDTO getById(@PathVariable Long id) {
 		return itemService.getById(id);
 	}
 
-	@GetMapping("/api/companies/{companyId}/items")
-	public Page<ItemResponseDTO> getAll(@PathVariable("companyId") Long companyId,
+	@GetMapping
+	public Page<ItemResponseDTO> getAll(@RequestHeader("X-Company-Id") Long companyId,
 			@RequestParam(required = false, name = "name") String name,
 			@RequestParam(required = false, name = "categoryIds") List<Integer> categoryIds,
 			@RequestParam(defaultValue = "0", name = "page") int page,
@@ -49,18 +51,18 @@ public class ItemController {
 		return itemService.getAll(name, categoryIds, page, size, sort);
 	}
 
-	@PutMapping("/api/items/{id}")
+	@PutMapping("/{id}")
 	public ItemResponseDTO update(@PathVariable Long id, @RequestBody ItemRequestDTO dto) {
 		return itemService.update(id, dto);
 	}
 
-	@DeleteMapping("/api/items/{id}")
+	@DeleteMapping("/{id}")
 	public void delete(@PathVariable Long id) {
 		itemService.delete(id);
 	}
 
-	@PostMapping("/api/companies/{companyId}/items/import")
-	public ResponseEntity<String> importItems(@PathVariable Long companyId,
+	@PostMapping("/import")
+	public ResponseEntity<String> importItems(@RequestHeader("X-Company-Id") Long companyId,
 			@RequestParam(name = "file") MultipartFile file, HttpServletRequest request) {
 		itemService.importFromExcel(companyId, file, request);
 		return ResponseEntity.ok("Items imported successfully");
