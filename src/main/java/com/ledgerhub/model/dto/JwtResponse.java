@@ -20,15 +20,17 @@ public class JwtResponse implements Serializable {
 	private String email;
 	private Long userId;
 	private Boolean isAdmin;
+	private Long defaultCompanyId;
 
 	public JwtResponse(String jwttoken) {
 		this.jwttoken = jwttoken;
 	}
 
-	public static JwtResponse from(User user, String token) {
+	public static JwtResponse from(User user, String token, Long defaultCompanyId) {
 		JwtResponse jwtResponse = new JwtResponse(token);
 		jwtResponse.setEmail(user.getEmail());
 		jwtResponse.setUserId(user.getId());
+		jwtResponse.setDefaultCompanyId(defaultCompanyId);
 		return jwtResponse;
 	}
 

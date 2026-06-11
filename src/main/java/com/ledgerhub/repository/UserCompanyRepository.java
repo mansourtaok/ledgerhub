@@ -16,6 +16,8 @@ public interface UserCompanyRepository extends JpaRepository<UserCompany, Long> 
 
 	Optional<UserCompany> findByUserIdAndCompanyId(Long userId, Long companyId);
 
+	Optional<UserCompany> findByUserIdAndIsDefaultTrue(Long userId);
+
 	@Modifying
 	@Query("UPDATE UserCompany uc SET uc.isDefault = false WHERE uc.user.id = :userId")
 	void clearDefaultForUser(@Param("userId") Long userId);
