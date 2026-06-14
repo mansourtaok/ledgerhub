@@ -88,8 +88,8 @@ public class CompanyService implements ICompanyService {
 		company.setWebsite(dto.getWebsite());
 		company.setActive(dto.getActive());
 
-		if (dto.getCountryId() != null) {
-			Country country = countryRepository.findById(dto.getCountryId())
+		if (dto.getCountry() != null && dto.getCountry().getId() != null) {
+			Country country = countryRepository.findById(dto.getCountry().getId())
 					.orElseThrow(() -> new RuntimeException("Country not found"));
 			company.setCountry(country);
 		}
@@ -133,8 +133,8 @@ public class CompanyService implements ICompanyService {
 				.address(dto.getAddress()).taxNumber(dto.getTaxNumber()).header(dto.getHeader()).footer(dto.getFooter())
 				.website(dto.getWebsite()).active(dto.getActive()).build();
 
-		if (dto.getCountryId() != null) {
-			Country country = countryRepository.findById(dto.getCountryId())
+		if (dto.getCountry() != null && dto.getCountry().getId() != null) {
+			Country country = countryRepository.findById(dto.getCountry().getId())
 					.orElseThrow(() -> new RuntimeException("Country not found"));
 			company.setCountry(country);
 		}

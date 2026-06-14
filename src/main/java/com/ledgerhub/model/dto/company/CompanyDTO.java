@@ -25,7 +25,6 @@ public class CompanyDTO {
 	private String taxNumber;
 	private String header;
 	private String footer;
-	private Long countryId;
 	private CountryDTO country;
 	private Boolean active;
 	private String website;
