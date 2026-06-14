@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ledgerhub.model.db.Company;
 import com.ledgerhub.model.db.User;
 import com.ledgerhub.model.db.UserCompany;
+import com.ledgerhub.model.dto.usercompany.UserCompanyBulkRequestDTO;
 import com.ledgerhub.model.dto.usercompany.UserCompanyRequestDTO;
 import com.ledgerhub.model.dto.usercompany.UserCompanyResponseDTO;
 import com.ledgerhub.repository.CompanyRepository;
@@ -50,6 +51,34 @@ public class UserCompanyService implements IUserCompanyService {
 				.build();
 
 		return toDto(userCompanyRepository.save(userCompany));
+	}
+
+	@Override
+	@Transactional
+	public List<UserCompanyResponseDTO> assignBulk(UserCompanyBulkRequestDTO dto) {
+		Company company = companyRepository.findById(dto.getCompanyId())
+				.orElseThrow(() -> new IllegalArgumentException("Company not found"));
+
+		return dto.getUsers().stream()
+				.filter(entry -> userCompanyRepository.findByUserIdAndCompanyId(entry.getUserId(), dto.getCompanyId()).isEmpty())
+				.map(entry -> {
+					User user = userRepository.findById(entry.getUserId())
+							.orElseThrow(() -> new IllegalArgumentException("User not found: " + entry.getUserId()));
+
+					boolean setDefault = Boolean.TRUE.equals(entry.getIsDefault());
+					if (setDefault) {
+						userCompanyRepository.clearDefaultForUser(entry.getUserId());
+					}
+
+					UserCompany userCompany = UserCompany.builder()
+							.user(user)
+							.company(company)
+							.isDefault(setDefault)
+							.build();
+
+					return toDto(userCompanyRepository.save(userCompany));
+				})
+				.toList();
 	}
 
 	@Override

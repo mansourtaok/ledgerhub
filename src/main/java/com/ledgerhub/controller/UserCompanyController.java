@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ledgerhub.model.dto.usercompany.UserCompanyBulkRequestDTO;
 import com.ledgerhub.model.dto.usercompany.UserCompanyRequestDTO;
 import com.ledgerhub.model.dto.usercompany.UserCompanyResponseDTO;
 import com.ledgerhub.service.usercompany.IUserCompanyService;
@@ -32,6 +33,12 @@ public class UserCompanyController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public UserCompanyResponseDTO assign(@RequestBody UserCompanyRequestDTO dto) {
 		return userCompanyService.assign(dto);
+	}
+
+	@PostMapping("/bulk")
+	@ResponseStatus(HttpStatus.CREATED)
+	public List<UserCompanyResponseDTO> assignBulk(@RequestBody UserCompanyBulkRequestDTO dto) {
+		return userCompanyService.assignBulk(dto);
 	}
 
 	@GetMapping("/user/{userId}")
