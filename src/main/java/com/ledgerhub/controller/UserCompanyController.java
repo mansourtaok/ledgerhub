@@ -41,12 +41,7 @@ public class UserCompanyController {
 		return userCompanyService.assignBulk(dto);
 	}
 
-	@GetMapping("/user/{userId}")
-	public List<UserCompanyResponseDTO> getByUser(@PathVariable Long userId) {
-		return userCompanyService.getByUser(userId);
-	}
-
-	@PutMapping("/{id}/default")
+@PutMapping("/{id}/default")
 	public UserCompanyResponseDTO setDefault(@PathVariable Long id) {
 		return userCompanyService.setDefault(id);
 	}

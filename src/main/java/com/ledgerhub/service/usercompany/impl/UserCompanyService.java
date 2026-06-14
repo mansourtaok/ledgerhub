@@ -81,15 +81,7 @@ public class UserCompanyService implements IUserCompanyService {
 				.toList();
 	}
 
-	@Override
-	public List<UserCompanyResponseDTO> getByUser(Long userId) {
-		if (!userRepository.existsById(userId)) {
-			throw new IllegalArgumentException("User not found");
-		}
-		return userCompanyRepository.findByUserId(userId).stream().map(this::toDto).toList();
-	}
-
-	@Override
+@Override
 	@Transactional
 	public UserCompanyResponseDTO setDefault(Long id) {
 		UserCompany userCompany = userCompanyRepository.findById(id)

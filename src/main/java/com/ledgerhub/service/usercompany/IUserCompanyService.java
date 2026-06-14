@@ -12,9 +12,7 @@ public interface IUserCompanyService {
 
 	List<UserCompanyResponseDTO> assignBulk(UserCompanyBulkRequestDTO dto);
 
-	List<UserCompanyResponseDTO> getByUser(Long userId);
-
-	UserCompanyResponseDTO setDefault(Long id);
+UserCompanyResponseDTO setDefault(Long id);
 
 	void remove(Long id);
 }
