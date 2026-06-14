@@ -15,6 +15,7 @@ import com.ledgerhub.model.db.Company;
 import com.ledgerhub.model.db.Country;
 import com.ledgerhub.model.db.Document;
 import com.ledgerhub.model.dto.company.CompanyDTO;
+import com.ledgerhub.model.dto.country.CountryDTO;
 import com.ledgerhub.repository.CompanyRepository;
 import com.ledgerhub.repository.CountryRepository;
 import com.ledgerhub.repository.DocumentRepository;
@@ -146,10 +147,17 @@ public class CompanyService implements ICompanyService {
 			document = documentRepository.findByReferenceId(entity.getEntityId()).stream()
 					.map(Document::getFilepath).findFirst().orElse(null);
 		}
+		CountryDTO countryDTO = null;
+		if (entity.getCountry() != null) {
+			countryDTO = CountryDTO.builder()
+					.id(entity.getCountry().getId())
+					.name(entity.getCountry().getName())
+					.build();
+		}
 		return CompanyDTO.builder().id(entity.getId()).name(entity.getName()).email(entity.getEmail())
 				.phone(entity.getPhone()).address(entity.getAddress()).taxNumber(entity.getTaxNumber())
 				.header(entity.getHeader()).footer(entity.getFooter()).website(entity.getWebsite())
-				.countryId(entity.getCountry() != null ? entity.getCountry().getId() : null).active(entity.getActive())
+				.country(countryDTO).active(entity.getActive())
 				.document(document).build();
 	}
 }

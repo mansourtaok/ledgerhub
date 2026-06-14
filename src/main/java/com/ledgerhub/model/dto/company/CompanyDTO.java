@@ -2,6 +2,8 @@ package com.ledgerhub.model.dto.company;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ledgerhub.model.dto.country.CountryDTO;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,6 +26,7 @@ public class CompanyDTO {
 	private String header;
 	private String footer;
 	private Long countryId;
+	private CountryDTO country;
 	private Boolean active;
 	private String website;
 	private MultipartFile image;
