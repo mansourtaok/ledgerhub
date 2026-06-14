@@ -28,6 +28,8 @@ public class JwtResponse implements Serializable {
 
 	public static JwtResponse from(User user, String token, Long defaultCompanyId) {
 		JwtResponse jwtResponse = new JwtResponse(token);
+		jwtResponse.setFirstName(user.getFirstName());
+		jwtResponse.setLastName(user.getLastName());
 		jwtResponse.setEmail(user.getEmail());
 		jwtResponse.setUserId(user.getId());
 		jwtResponse.setDefaultCompanyId(defaultCompanyId);
