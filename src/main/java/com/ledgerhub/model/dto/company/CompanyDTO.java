@@ -29,5 +29,5 @@ public class CompanyDTO {
 	private Boolean active;
 	private String website;
 	private MultipartFile image;
-	private String document;
+	private String imageUrl;
 }

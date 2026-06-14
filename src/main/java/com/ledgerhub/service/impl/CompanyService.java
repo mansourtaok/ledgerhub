@@ -33,7 +33,11 @@ public class CompanyService implements ICompanyService {
 	private final EntityRepository entityRepository;
 	private final DocumentRepository documentRepository;
 
-	private static final String uploadDir = "C:\\Users\\User\\Documents\\Mansour\\projects\\ledgerhub";
+	@org.springframework.beans.factory.annotation.Value("${app.upload-dir}")
+	private String uploadDir;
+
+	@org.springframework.beans.factory.annotation.Value("${app.base-url}")
+	private String baseUrl;
 
 	@Transactional
 	@Override
@@ -51,7 +55,7 @@ public class CompanyService implements ICompanyService {
 				throw new RuntimeException("File upload failed");
 			}
 			Document doc = new Document();
-			doc.setFilename(image.getOriginalFilename());
+			doc.setFilename(filename);
 			doc.setFilepath(path.toString());
 			doc.setReferenceId(entity.getId());
 			documentRepository.save(doc);
@@ -112,7 +116,7 @@ public class CompanyService implements ICompanyService {
 				throw new RuntimeException("File upload failed");
 			}
 			Document doc = new Document();
-			doc.setFilename(image.getOriginalFilename());
+			doc.setFilename(filename);
 			doc.setFilepath(path.toString());
 			doc.setReferenceId(company.getEntityId());
 			documentRepository.save(doc);
@@ -142,10 +146,11 @@ public class CompanyService implements ICompanyService {
 	}
 
 	private CompanyDTO mapToDTO(Company entity) {
-		String document = null;
+		String imageUrl = null;
 		if (entity.getEntityId() != null) {
-			document = documentRepository.findByReferenceId(entity.getEntityId()).stream()
-					.map(Document::getFilepath).findFirst().orElse(null);
+			imageUrl = documentRepository.findByReferenceId(entity.getEntityId()).stream()
+					.map(doc -> baseUrl + "/images/" + doc.getFilename())
+					.findFirst().orElse(null);
 		}
 		CountryDTO countryDTO = null;
 		if (entity.getCountry() != null) {
@@ -158,6 +163,6 @@ public class CompanyService implements ICompanyService {
 				.phone(entity.getPhone()).address(entity.getAddress()).taxNumber(entity.getTaxNumber())
 				.header(entity.getHeader()).footer(entity.getFooter()).website(entity.getWebsite())
 				.country(countryDTO).active(entity.getActive())
-				.document(document).build();
+				.imageUrl(imageUrl).build();
 	}
 }

@@ -53,7 +53,7 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 				.csrf(csrf -> csrf.disable())
-				.authorizeHttpRequests(auth -> auth.requestMatchers("/health", "/auth/login", "/v3/api-docs/**",
+				.authorizeHttpRequests(auth -> auth.requestMatchers("/health", "/auth/login", "/images/**", "/v3/api-docs/**",
 						"/swagger-ui/**", "/swagger-ui.html").permitAll().anyRequest().authenticated())
 				.addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 				.httpBasic(Customizer.withDefaults()).exceptionHandling(
