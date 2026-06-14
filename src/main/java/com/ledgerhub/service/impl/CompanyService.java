@@ -20,6 +20,7 @@ import com.ledgerhub.repository.CompanyRepository;
 import com.ledgerhub.repository.CountryRepository;
 import com.ledgerhub.repository.DocumentRepository;
 import com.ledgerhub.repository.EntityRepository;
+import com.ledgerhub.repository.UserCompanyRepository;
 import com.ledgerhub.service.ICompanyService;
 
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ public class CompanyService implements ICompanyService {
 	private final CountryRepository countryRepository;
 	private final EntityRepository entityRepository;
 	private final DocumentRepository documentRepository;
+	private final UserCompanyRepository userCompanyRepository;
 
 	@org.springframework.beans.factory.annotation.Value("${app.upload-dir}")
 	private String uploadDir;
@@ -130,6 +132,17 @@ public class CompanyService implements ICompanyService {
 		Company company = companyRepository.findById(id).orElseThrow(() -> new RuntimeException("Company not found"));
 		company.setActive(false);
 		companyRepository.save(company);
+	}
+
+	@Override
+	public List<CompanyDTO> getByUserId(Long userId) {
+		return userCompanyRepository.findByUserId(userId).stream()
+				.map(uc -> {
+					CompanyDTO dto = mapToDTO(uc.getCompany());
+					dto.setIsDefault(uc.getIsDefault());
+					return dto;
+				})
+				.toList();
 	}
 
 	private Company mapToEntity(CompanyDTO dto) {

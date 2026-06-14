@@ -43,6 +43,12 @@ public class CompanyController {
 		return ResponseEntity.ok(Map.of("totalData", companies.size(), "data", companies));
 	}
 
+	@GetMapping("/user/{userId}")
+	public ResponseEntity<Map<String, Object>> getByUserId(@PathVariable Long userId) {
+		List<CompanyDTO> companies = companyService.getByUserId(userId);
+		return ResponseEntity.ok(Map.of("totalData", companies.size(), "data", companies));
+	}
+
 	@PutMapping(value = "/{id}", consumes = { "multipart/form-data", "application/json" })
 	public ResponseEntity<CompanyDTO> update(@PathVariable("id") Long id, @ModelAttribute CompanyDTO dto) {
 		return ResponseEntity.ok(companyService.update(id, dto));

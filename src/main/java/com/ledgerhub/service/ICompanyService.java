@@ -15,4 +15,6 @@ public interface ICompanyService {
 	CompanyDTO update(Long id, CompanyDTO dto);
 
 	void deactivate(Long id);
+
+	List<CompanyDTO> getByUserId(Long userId);
 }

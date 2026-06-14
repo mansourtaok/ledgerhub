@@ -27,6 +27,7 @@ public class CompanyDTO {
 	private String footer;
 	private CountryDTO country;
 	private Boolean active;
+	private Boolean isDefault;
 	private String website;
 	private MultipartFile image;
 	private String imageUrl;
