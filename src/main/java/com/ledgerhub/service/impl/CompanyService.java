@@ -10,10 +10,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ledgerhub.config.jwt.JwtTokenUtil;
 import com.ledgerhub.model.db.BaseEntity;
 import com.ledgerhub.model.db.Company;
 import com.ledgerhub.model.db.Country;
 import com.ledgerhub.model.db.Document;
+import com.ledgerhub.model.db.User;
 import com.ledgerhub.model.dto.company.CompanyDTO;
 import com.ledgerhub.model.dto.country.CountryDTO;
 import com.ledgerhub.repository.CompanyRepository;
@@ -21,8 +23,10 @@ import com.ledgerhub.repository.CountryRepository;
 import com.ledgerhub.repository.DocumentRepository;
 import com.ledgerhub.repository.EntityRepository;
 import com.ledgerhub.repository.UserCompanyRepository;
+import com.ledgerhub.repository.UserRepository;
 import com.ledgerhub.service.ICompanyService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -34,6 +38,8 @@ public class CompanyService implements ICompanyService {
 	private final EntityRepository entityRepository;
 	private final DocumentRepository documentRepository;
 	private final UserCompanyRepository userCompanyRepository;
+	private final UserRepository userRepository;
+	private final JwtTokenUtil jwtTokenUtil;
 
 	@org.springframework.beans.factory.annotation.Value("${app.upload-dir}")
 	private String uploadDir;
@@ -43,7 +49,7 @@ public class CompanyService implements ICompanyService {
 
 	@Transactional
 	@Override
-	public CompanyDTO create(CompanyDTO dto) {
+	public CompanyDTO create(CompanyDTO dto, HttpServletRequest request) {
 		BaseEntity entity = entityRepository.save(BaseEntity.builder().entityType("COMPANY").build());
 
 		MultipartFile image = dto.getImage();
@@ -63,8 +69,13 @@ public class CompanyService implements ICompanyService {
 			documentRepository.save(doc);
 		}
 
+		User user = userRepository.findById(jwtTokenUtil.getUserIdFromToken(request.getHeader("Authorization")))
+				.orElseThrow(() -> new RuntimeException("User not found"));
+
 		Company company = mapToEntity(dto);
 		company.setEntityId(entity.getId());
+		company.setCreatedUser(user);
+		company.setUpdatedUser(user);
 		return mapToDTO(companyRepository.save(company));
 	}
 
@@ -81,8 +92,12 @@ public class CompanyService implements ICompanyService {
 
 	@Transactional
 	@Override
-	public CompanyDTO update(Long id, CompanyDTO dto) {
+	public CompanyDTO update(Long id, CompanyDTO dto, HttpServletRequest request) {
 		Company company = companyRepository.findById(id).orElseThrow(() -> new RuntimeException("Company not found"));
+
+		User user = userRepository.findById(jwtTokenUtil.getUserIdFromToken(request.getHeader("Authorization")))
+				.orElseThrow(() -> new RuntimeException("User not found"));
+		company.setUpdatedUser(user);
 
 		company.setName(dto.getName());
 		company.setEmail(dto.getEmail());

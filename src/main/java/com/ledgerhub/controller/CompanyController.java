@@ -17,6 +17,7 @@ import com.ledgerhub.model.dto.company.CompanyDTO;
 import com.ledgerhub.service.impl.CompanyService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -28,8 +29,8 @@ public class CompanyController {
 	private final CompanyService companyService;
 
 	@PostMapping(consumes = { "multipart/form-data", "application/json" })
-	public ResponseEntity<CompanyDTO> create(@ModelAttribute CompanyDTO dto) {
-		return ResponseEntity.ok(companyService.create(dto));
+	public ResponseEntity<CompanyDTO> create(@ModelAttribute CompanyDTO dto, HttpServletRequest request) {
+		return ResponseEntity.ok(companyService.create(dto, request));
 	}
 
 	@GetMapping("/{id}")
@@ -50,8 +51,9 @@ public class CompanyController {
 	}
 
 	@PutMapping(value = "/{id}", consumes = { "multipart/form-data", "application/json" })
-	public ResponseEntity<CompanyDTO> update(@PathVariable("id") Long id, @ModelAttribute CompanyDTO dto) {
-		return ResponseEntity.ok(companyService.update(id, dto));
+	public ResponseEntity<CompanyDTO> update(@PathVariable("id") Long id, @ModelAttribute CompanyDTO dto,
+			HttpServletRequest request) {
+		return ResponseEntity.ok(companyService.update(id, dto, request));
 	}
 
 	@DeleteMapping("/{id}")

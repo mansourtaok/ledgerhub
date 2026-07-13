@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -62,15 +63,32 @@ public class Company {
 	@Column(name = "entity_id")
 	private Long entityId;
 
-	@Column(name = "created_at", updatable = false)
-	private LocalDateTime createdAt;
+	@Column(name = "created_date", updatable = false)
+	private LocalDateTime createdDate;
+
+	@Column(name = "updated_date")
+	private LocalDateTime updatedDate;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "created_userid")
+	private User createdUser;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "updated_userid")
+	private User updatedUser;
 
 	@Column
 	private Boolean active;
 
 	@PrePersist
 	void prePersist() {
-		this.createdAt = LocalDateTime.now();
+		this.createdDate = LocalDateTime.now();
+		this.updatedDate = this.createdDate;
 		this.active = Boolean.TRUE;
+	}
+
+	@PreUpdate
+	void preUpdate() {
+		this.updatedDate = LocalDateTime.now();
 	}
 }
