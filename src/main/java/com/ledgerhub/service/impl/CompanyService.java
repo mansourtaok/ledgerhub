@@ -191,6 +191,20 @@ public class CompanyService implements ICompanyService {
 				.phone(entity.getPhone()).address(entity.getAddress()).taxNumber(entity.getTaxNumber())
 				.header(entity.getHeader()).footer(entity.getFooter()).website(entity.getWebsite())
 				.country(countryDTO).active(entity.getActive())
-				.imageUrl(imageUrl).build();
+				.imageUrl(imageUrl)
+				.createdDate(entity.getCreatedDate()).updatedDate(entity.getUpdatedDate())
+				.createdUser(userDisplayName(entity.getCreatedUser()))
+				.updatedUser(userDisplayName(entity.getUpdatedUser()))
+				.build();
+	}
+
+	private String userDisplayName(User user) {
+		if (user == null) {
+			return null;
+		}
+		String fullName = String.join(" ",
+				user.getFirstName() != null ? user.getFirstName() : "",
+				user.getLastName() != null ? user.getLastName() : "").trim();
+		return fullName.isEmpty() ? user.getEmail() : fullName;
 	}
 }

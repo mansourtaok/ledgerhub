@@ -1,5 +1,7 @@
 package com.ledgerhub.model.dto.company;
 
+import java.time.LocalDateTime;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ledgerhub.model.dto.country.CountryDTO;
@@ -31,4 +33,8 @@ public class CompanyDTO {
 	private String website;
 	private MultipartFile image;
 	private String imageUrl;
+	private LocalDateTime createdDate;
+	private LocalDateTime updatedDate;
+	private String createdUser;
+	private String updatedUser;
 }
