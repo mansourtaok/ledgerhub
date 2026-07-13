@@ -1,7 +1,6 @@
 package com.ledgerhub.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -44,9 +43,8 @@ public class CompanyController {
 	}
 
 	@GetMapping("/user/{userId}")
-	public ResponseEntity<Map<String, Object>> getByUserId(@PathVariable Long userId) {
-		List<CompanyDTO> companies = companyService.getByUserId(userId);
-		return ResponseEntity.ok(Map.of("totalData", companies.size(), "data", companies));
+	public ResponseEntity<List<CompanyDTO>> getByUserId(@PathVariable Long userId) {
+		return ResponseEntity.ok(companyService.getByUserId(userId));
 	}
 
 	@PutMapping(value = "/{id}", consumes = { "multipart/form-data", "application/json" })
