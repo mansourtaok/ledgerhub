@@ -39,9 +39,8 @@ public class CompanyController {
 	}
 
 	@GetMapping
-	public ResponseEntity<Map<String, Object>> getAll() {
-		List<CompanyDTO> companies = companyService.getAll();
-		return ResponseEntity.ok(Map.of("totalData", companies.size(), "data", companies));
+	public ResponseEntity<List<CompanyDTO>> getAll() {
+		return ResponseEntity.ok(companyService.getAll());
 	}
 
 	@GetMapping("/user/{userId}")
